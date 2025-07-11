@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "name": "Admin",
+      "role": "owner",
+      "expiredDate": "2099-12-31T00:00:00.000Z",
+      "cooldown": {
+        "member": 60,
+        "reseller": 30,
+        "reseller_vip": 0,
+        "ownerlite": 0,
+        "owner": 0
+      }
+    }
+  ]
+}
