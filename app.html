@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dark Bug Sender</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0c0c14;
+      color: #e0e0ff;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    .star-field {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(106, 61, 158, 0.1) 0px, transparent 1px),
+        radial-gradient(circle at 80% 70%, rgba(138, 92, 199, 0.1) 0px, transparent 1px),
+        radial-gradient(circle at 50% 20%, rgba(106, 61, 158, 0.1) 0px, transparent 1px);
+      background-size: 300px 300px;
+      animation: twinkle 15s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.3; }
+    }
+
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .login-box {
+      background: rgba(26, 26, 46, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(106, 61, 158, 0.5);
+      backdrop-filter: blur(5px);
+      border: 1px solid #5a3a8a;
+      text-align: center;
+    }
+
+    .profile-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #8a5cc7;
+      box-shadow: 0 0 20px rgba(138, 92, 199, 0.7);
+      margin: -70px auto 20px;
+      background: #1a1a2e;
+      position: relative;
+      z-index: 3;
+    }
+
+    h2 {
+      color: #b18bdd;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    input, select {
+      margin: 12px 0;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #5a3a8a;
+      background: rgba(12, 12, 20, 0.7);
+      color: #e0e0ff;
+      width: 100%;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #8a5cc7;
+      box-shadow: 0 0 15px rgba(138, 92, 199, 0.5);
+    }
+
+    input::placeholder {
+      color: #8a7ca8;
+    }
+
+    .glow-button {
+      background: linear-gradient(90deg, #6a3d9e, #4b2b7a);
+      border: none;
+      color: white;
+      padding: 14px 30px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      width: 100%;
+    }
+
+    .glow-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(106, 61, 158, 0.4);
+    }
+
+    .glow-button::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 40%);
+      animation: rotateGlow 4s linear infinite;
+      z-index: 0;
+    }
+
+    .glow-button span {
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .page {
+      display: none;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+      padding: 20px;
+      position: relative;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #5a3a8a;
+      margin-bottom: 30px;
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .profile-header .profile-img {
+      width: 60px;
+      height: 60px;
+      margin: 0;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #b18bdd;
+      font-size: 1.1rem;
+    }
+
+    .user-role {
+      font-size: 0.85rem;
+      color: #8a7ca8;
+    }
+
+    .cooldown-box {
+      background: rgba(106, 61, 158, 0.2);
+      border-radius: 10px;
+      padding: 8px 15px;
+      font-size: 14px;
+      border: 1px solid #5a3a8a;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .logout-btn {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1px solid #ff6b6b;
+      color: #ff9e9e;
+      padding: 8px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.3);
+    }
+
+    .bug-tools {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .api-container {
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid #5a3a8a;
+    }
+
+    .api-title {
+      color: #b18bdd;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .api-title img {
+      width: 30px;
+      margin-right: 10px;
+      filter: invert(0.7) sepia(1) saturate(5) hue-rotate(230deg);
+    }
+
+    .api-description {
+      font-size: 14px;
+      color: #a0a0d0;
+      margin: 10px 0 15px;
+      text-align: center;
+    }
+
+    .wing-container {
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .wing-animation {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: float 3s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0% { transform: translate(-50%, 0px); }
+      50% { transform: translate(-50%, -10px); }
+      100% { transform: translate(-50%, 0px); }
+    }
+
+    .wing-animation img {
+      width: 60px;
+      filter: invert(0.7) sepia(1) saturate(5) hue-rotate(230deg);
+    }
+
+    .number-input-container {
+      position: relative;
+      margin-top: 40px;
+    }
+
+    .number-input {
+      position: relative;
+      z-index: 2;
+    }
+
+    .input-glow {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: linear-gradient(45deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
+      background-size: 400% 400%;
+      border-radius: 17px;
+      z-index: 1;
+      animation: glowing 3s ease infinite;
+      filter: blur(5px);
+      opacity: 0.7;
+    }
+
+    @keyframes glowing {
+      0% { background-position: 0 0; }
+      50% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    #success-popup, #coming-soon-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(106, 61, 158, 0.8);
+      z-index: 100;
+      border: 1px solid #8a5cc7;
+      width: 90%;
+      max-width: 400px;
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+
+    .popup-title {
+      color: #b18bdd;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+
+    .popup-info {
+      background: rgba(12, 12, 20, 0.5);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    .popup-info p {
+      margin: 10px 0;
+      display: flex;
+    }
+
+    .popup-info strong {
+      color: #b18bdd;
+      min-width: 100px;
+      display: inline-block;
+    }
+
+    .cooldown-timer {
+      font-size: 1.2rem;
+      color: #ff9e9e;
+      margin: 15px 0;
+    }
+
+    .news-box {
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #5a3a8a;
+    }
+
+    .news-box img {
+      width: 100%;
+      border-radius: 15px;
+      max-height: 180px;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border: 1px solid #5a3a8a;
+    }
+
+    .account-form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #5a3a8a;
+    }
+
+    .form-title {
+      color: #b18bdd;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .permissions-box {
+      background: rgba(12, 12, 20, 0.5);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .permissions-title {
+      color: #b18bdd;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .permission-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #5a3a8a;
+    }
+
+    .permission-item:last-child {
+      border-bottom: none;
+    }
+
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(26, 26, 46, 0.9);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #5a3a8a;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .navbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    .nav-item.active {
+      background: rgba(106, 61, 158, 0.3);
+    }
+
+    .nav-item:hover {
+      background: rgba(106, 61, 158, 0.2);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      margin-bottom: 3px;
+      color: #b18bdd;
+    }
+
+    .nav-text {
+      font-size: 12px;
+      color: #e0e0ff;
+    }
+
+    .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .role-badge {
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .owner { background: rgba(255, 107, 107, 0.2); color: #ff9e9e; border: 1px solid #ff6b6b; }
+    .reseller_vip { background: rgba(177, 139, 221, 0.2); color: #b18bdd; border: 1px solid #b18bdd; }
+    .reseller { background: rgba(106, 61, 158, 0.2); color: #8a5cc7; border: 1px solid #8a5cc7; }
+    .member { background: rgba(138, 124, 168, 0.2); color: #8a7ca8; border: 1px solid #8a7ca8; }
+
+    .access-denied {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 15px;
+      border: 1px solid #ff6b6b;
+      margin-top: 30px;
+    }
+
+    .access-denied h3 {
+      color: #ff9e9e;
+      margin-bottom: 20px;
+    }
+
+    .access-denied p {
+      color: #a0a0d0;
+      margin-bottom: 20px;
+    }
+    
+    /* New styles for duration input */
+    .duration-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .duration-input {
+      flex: 1;
+    }
+    
+    .duration-unit {
+      color: #b18bdd;
+      font-weight: bold;
+    }
+    
+    .expired-info {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #ff9e9e;
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 8px;
+      border: 1px solid #ff6b6b;
+    }
+    
+    /* New styles for check target button */
+    .check-target-btn {
+      background: linear-gradient(90deg, #3d9e6a, #2b7a4b);
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin: 15px auto;
+      display: block;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      width: 80%;
+      text-decoration: none;
+      text-align: center;
+    }
+    
+    .check-target-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(61, 158, 106, 0.4);
+    }
+    
+    .check-target-btn::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 40%);
+      animation: rotateGlow 4s linear infinite;
+      z-index: 0;
+    }
+    
+    .check-target-btn span {
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* Styles for Apophis AI page */
+    .ai-container {
+      max-width: 800px;
+      margin: 0 auto;
+      height: calc(100vh - 170px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .chat-message {
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      border-radius: 12px;
+      max-width: 80%;
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: messageAppear 0.3s forwards;
+    }
+    
+    @keyframes messageAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .user-message {
+      background: rgba(106, 61, 158, 0.3);
+      margin-left: auto;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .bot-message {
+      background: rgba(26, 26, 46, 0.9);
+      margin-right: auto;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .chat-input-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .chat-input-container input {
+      flex: 1;
+      margin: 0;
+    }
+    
+    #send-ai-btn {
+      margin: 0;
+      width: auto;
+      min-width: 100px;
+    }
+    
+    .ai-title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #b18bdd;
+    }
+    
+    .ai-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background: linear-gradient(135deg, #6a3d9e, #4b2b7a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    
+    .typing-indicator {
+      display: none;
+      color: #8a7ca8;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    
+    .message-timestamp {
+      font-size: 0.7rem;
+      color: #8a7ca8;
+      margin-top: 5px;
+      text-align: right;
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .ai-avatar {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #6a3d9e, #4b2b7a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-size: 12px;
+    }
+    
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      background: rgba(106, 61, 158, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-size: 12px;
+    }
+    
+    .message-sender {
+      font-weight: bold;
+      color: #b18bdd;
+    }
+    
+    .code-block {
+      background: rgba(12, 12, 20, 0.5);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      overflow-x: auto;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .ai-suggestion {
+      background: rgba(26, 26, 46, 0.9);
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .suggestion-title {
+      color: #b18bdd;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    /* New role badge for ownerlite */
+    .ownerlite { 
+      background: rgba(255, 215, 0, 0.2); 
+      color: #ffd700; 
+      border: 1px solid #ffd700; 
+    }
+    
+    /* New styles for private bug page */
+    #private-tools-page .api-container {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(42, 15, 77, 0.8));
+      border: 1px solid #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+    
+    #private-tools-page .api-title {
+      color: #ffd700;
+    }
+    
+    #private-tools-page .wing-animation img {
+      filter: invert(0.8) sepia(1) saturate(5) hue-rotate(40deg);
+    }
+    
+    #private-tools-page .number-input-container .input-glow {
+      background: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700, #ff8c00);
+    }
+    
+    #private-tools-page .glow-button {
+      background: linear-gradient(90deg, #ff8c00, #ffd700);
+    }
+    
+    #private-tools-page .glow-button:hover {
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+    }
+    
+    /* New error popup */
+    #error-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(46, 26, 26, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(199, 92, 92, 0.8);
+      z-index: 100;
+      border: 1px solid #c75c5c;
+      width: 90%;
+      max-width: 400px;
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+    
+    #error-popup .popup-title {
+      color: #ff9e9e;
+    }
+    
+    #error-popup .error-icon {
+      font-size: 50px;
+      margin-bottom: 20px;
+      color: #ff6b6b;
+    }
+    
+    /* Accounts list styles */
+    .accounts-list-container {
+      margin-top: 20px;
+      background: rgba(26, 26, 46, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #5a3a8a;
+    }
+    
+    .accounts-table-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 10px;
+    }
+    
+    .accounts-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .accounts-table th {
+      background: rgba(106, 61, 158, 0.3);
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #5a3a8a;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .accounts-table td {
+      padding: 10px;
+      border-bottom: 1px solid #5a3a8a;
+    }
+    
+    .accounts-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .delete-btn {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1px solid #ff6b6b;
+      color: #ff9e9e;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .delete-btn:hover {
+      background: rgba(255, 107, 107, 0.3);
+    }
+    
+    /* Loading indicator */
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #b18bdd;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="star-field"></div>
+
+  <div id="login-page" class="login-container">
+    <div class="login-box">
+      <img src="https://files.catbox.moe/4bbmda.jpeg" class="profile-img" />
+      <h2>Apophis Crasher</h2>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <div class="loader" id="login-loader"></div>
+      <button class="glow-button" onclick="login()"><span>Masuk</span></button>
+    </div>
+  </div>
+
+  <div id="home-page" class="page">
+    <div class="profile-header">
+      <div class="profile-info">
+        <img src="https://files.catbox.moe/y5mr0p.jpeg" class="profile-img" />
+        <div class="user-info">
+          <div class="user-name" id="user-name">Admin</div>
+          <div class="user-role" id="user-role">
+            <span class="role-badge owner">Owner</span>
+          </div>
+          <div id="expired-info" class="expired-info"></div>
+        </div>
+        <div class="cooldown-box">Cooldown: <span id="cooldown-display">00:00</span></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="news-box">
+      <img src="https://files.catbox.moe/2maxf0.jpeg" />
+      <h3>Berita Update</h3>
+      <p>Bug Tools Sekarang Sudah Lebih Mudah. Gunakan dengan bijak.</p>
+    </div>
+    <div class="news-box">
+      <h3>license</h3>
+      <p>License: Apophis Crasher System.2023 System Crash</p>
+    </div>
+  </div>
+
+  <div id="tools-page" class="page">
+    <div class="profile-header">
+      <div class="profile-info">
+        <img src="https://files.catbox.moe/y5mr0p.jpeg" class="profile-img" />
+        <div class="user-info">
+          <div class="user-name" id="tools-user-name">Admin</div>
+          <div class="user-role" id="tools-user-role">
+            <span class="role-badge owner">Owner</span>
+          </div>
+          <div id="tools-expired-info" class="expired-info"></div>
+        </div>
+        <div class="cooldown-box">Cooldown: <span id="tools-cooldown">00:00</span></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="bug-tools">
+      <div class="api-container">
+        <div class="api-title">
+          <img src="https://cdn-icons-png.flaticon.com/512/47/47961.png" alt="API" />
+          <h3>Pilih Jenis Bug</h3>
+        </div>
+        
+        <select id="bug-type" class="glow-button" style="margin: 0; padding: 12px; background: rgba(12, 12, 20, 0.5);">
+          <option value="fcinvis">Freeze IOS</option>
+          <option value="fcios">Invisible Andro</option>
+          <option value="Delayinvis">Delay Invisible</option>
+          <option value="fciphone">Invisible Ios</option>
+        </select>
+        
+        <div class="api-description">
+          Pilih jenis bug yang ingin dikirimkan ke target
+        </div>
+      </div>
+      
+      <div class="wing-container">
+        <div class="wing-animation">
+          <img src="https://cdn-icons-png.flaticon.com/512/47/47961.png" alt="wing" />
+        </div>
+        
+        <div class="number-input-container">
+          <div class="input-glow"></div>
+          <input type="text" 
+                 id="target-number" 
+                 class="number-input" 
+                 placeholder="Masukkan nomor WhatsApp (contoh: 8123456789)" />
+        </div>
+      </div>
+      
+      <div class="loader" id="bug-loader"></div>
+      <button class="glow-button" id="send-bug-btn" onclick="sendBug()" style="margin-top: 30px;">
+        <span>🚀 Kirim Bug</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="addacc-page" class="page">
+    <div class="profile-header">
+      <div class="profile-info">
+        <img src="https://files.catbox.moe/y5mr0p.jpeg" class="profile-img" />
+        <div class="user-info">
+          <div class="user-name" id="addacc-user-name">Admin</div>
+          <div class="user-role" id="addacc-user-role">
+            <span class="role-badge owner">Owner</span>
+          </div>
+          <div id="addacc-expired-info" class="expired-info"></div>
+        </div>
+        <div class="cooldown-box">Cooldown: <span id="addacc-cooldown">00:00</span></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div id="addacc-content">
+      <div class="account-form">
+        <h3 class="form-title">Tambah Akun Baru</h3>
+        
+        <div class="form-group">
+          <label for="new-username">Username</label>
+          <input type="text" id="new-username" placeholder="Username baru">
+        </div>
+        
+        <div class="form-group">
+          <label for="new-password">Password</label>
+          <input type="password" id="new-password" placeholder="Password">
+        </div>
+        
+        <div class="form-group">
+          <label for="account-role">Role</label>
+          <select id="account-role">
+            <option value="ownerlite">Owner Lite</option>
+            <option value="reseller_vip">Reseller VIP</option>
+            <option value="reseller">Reseller</option>
+            <option value="member">Member</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="account-duration">Durasi Akun</label>
+          <div class="duration-container">
+            <input type="number" id="account-duration" class="duration-input" placeholder="Durasi" value="30" min="1">
+            <span class="duration-unit">Hari</span>
+          </div>
+        </div>
+        
+        <div class="permissions-box">
+          <h4 class="permissions-title">Hak Akses Berdasarkan Role</h4>
+          <div class="permission-item">
+            <span>Owner</span>
+            <span>Cooldown: 0 detik</span>
+          </div>
+          <div class="permission-item">
+            <span>Owner Lite</span>
+            <span>Cooldown: 0 detik</span>
+          </div>
+          <div class="permission-item">
+            <span>Reseller VIP</span>
+            <span>Cooldown: 0 detik</span>
+          </div>
+          <div class="permission-item">
+            <span>Reseller</span>
+            <span>Cooldown: 30 detik</span>
+          </div>
+          <div class="permission-item">
+            <span>Member</span>
+            <span>Cooldown: 60 detik</span>
+          </div>
+        </div>
+        
+        <div class="loader" id="addacc-loader"></div>
+        <button class="glow-button" onclick="addAccount()">
+          <span>➕ Tambah Akun</span>
+        </button>
+      </div>
+
+      <div class="accounts-list-container">
+        <h3 class="form-title">Daftar Akun</h3>
+        <div class="accounts-table-container">
+          <table class="accounts-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Expired</th>
+                <th style="text-align:center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-list-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="apophis-page" class="page">
+    <div class="profile-header">
+      <div class="profile-info">
+        <img src="https://i.pravatar.cc/150?img=11" class="profile-img" />
+        <div class="user-info">
+          <div class="user-name" id="apophis-user-name">Admin</div>
+          <div class="user-role" id="apophis-user-role">
+            <span class="role-badge owner">Owner</span>
+          </div>
+          <div id="apophis-expired-info" class="expired-info"></div>
+        </div>
+        <div class="cooldown-box">Cooldown: <span id="apophis-cooldown">00:00</span></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="ai-container">
+      <div class="ai-title">
+        <div class="ai-logo">🤖</div>
+        <h2>Apophis AI</h2>
+        <p>Asisten AI canggih untuk membantu Anda</p>
+      </div>
+      
+      <div class="chat-box" id="chat-box">
+        <div class="chat-message bot-message">
+          <div class="message-header">
+            <div class="ai-avatar">AI</div>
+            <div class="message-sender">Apophis AI</div>
+          </div>
+          <div class="message-content">
+            Halo! Saya Apophis AI, asisten cerdas yang siap membantu Anda. Apa yang bisa saya bantu hari ini?
+          </div>
+          <div class="ai-suggestion">
+            <div class="suggestion-title">Contoh pertanyaan:</div>
+            <div>- Bagaimana cara mengirim bug FC Invisible?</div>
+            <div>- Apa perbedaan antara Reseller VIP dan Member?</div>
+            <div>- Bagaimana cara menambahkan akun baru?</div>
+          </div>
+          <div class="message-timestamp">Baru saja</div>
+        </div>
+      </div>
+      
+      <div class="typing-indicator" id="typing-indicator">
+        Apophis AI sedang mengetik...
+      </div>
+      
+      <div class="chat-input-container">
+        <input type="text" id="user-input" placeholder="Tanyakan sesuatu..." />
+        <button class="glow-button" id="send-ai-btn" onclick="sendAI()">
+          <span>Kirim</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="private-tools-page" class="page">
+    <div class="profile-header">
+      <div class="profile-info">
+        <img src="https://files.catbox.moe/y5mr0p.jpeg" class="profile-img" />
+        <div class="user-info">
+          <div class="user-name" id="private-tools-user-name">Admin</div>
+          <div class="user-role" id="private-tools-user-role">
+            <span class="role-badge owner">Owner</span>
+          </div>
+          <div id="private-tools-expired-info" class="expired-info"></div>
+        </div>
+        <div class="cooldown-box">Cooldown: <span id="private-tools-cooldown">00:00</span></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="bug-tools">
+      <div class="api-container">
+        <div class="api-title">
+          <img src="https://cdn-icons-png.flaticon.com/512/47/47961.png" alt="API" />
+          <h3>Private Bug Tools</h3>
+        </div>
+        
+        <select id="private-bug-type" class="glow-button" style="margin: 0; padding: 12px; background: rgba(12, 12, 20, 0.5);">
+          <option value="sedot2gb">Delay Bulldozer</option>
+          <option value="loca">Crash Beta (only 19-20)</option>
+          <option value="fciphone">Fc Invis Ios</option>
+        </select>
+        
+        <div class="api-description">
+          Akses eksklusif untuk Owner dan Owner Lite
+        </div>
+      </div>
+      
+      <div class="wing-container">
+        <div class="wing-animation">
+          <img src="https://cdn-icons-png.flaticon.com/512/47/47961.png" alt="wing" />
+        </div>
+        
+        <div class="number-input-container">
+          <div class="input-glow"></div>
+          <input type="text" 
+                 id="private-target-number" 
+                 class="number-input" 
+                 placeholder="Masukkan nomor WhatsApp (contoh: 8123456789)" />
+        </div>
+      </div>
+      
+      <div class="loader" id="private-bug-loader"></div>
+      <button class="glow-button" id="send-private-bug-btn" onclick="sendPrivateBug()" style="margin-top: 30px;">
+        <span>🔥 Send Bug</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="success-popup">
+    <div class="popup-title">✅ Bug Berhasil Dikirim!</div>
+    
+    <div class="popup-info">
+      <p><strong>Nomor Target:</strong> <span id="popup-target">-</span></p>
+      <p><strong>Jenis Bug:</strong> <span id="popup-bug-type">-</span></p>
+    </div>
+    
+    <a id="check-target-btn" class="check-target-btn" target="_blank">
+      <span>🔍 Check Target</span>
+    </a>
+    
+    <div class="cooldown-timer">
+      Cooldown: <span id="popup-cooldown">10:00</span>
+    </div>
+    
+    <button class="glow-button" onclick="closePopup()" style="background: rgba(26, 26, 46, 0.7);">
+      <span>Tutup</span>
+    </button>
+  </div>
+
+  <div id="coming-soon-popup">
+    <div class="popup-title">🚧 Fitur Segera Hadir!</div>
+    <div class="popup-info">
+      <p>Mohon maaf, fitur Apophis AI belum sepenuhnya tersedia saat ini. Kami sedang dalam tahap pengembangan untuk memberikan pengalaman terbaik kepada Anda.</p>
+      <p>Nantikan update selanjutnya!</p>
+    </div>
+    <button class="glow-button" onclick="closeComingSoonPopup()"><span>Oke</span></button>
+  </div>
+
+  <div id="error-popup">
+    <div class="error-icon">❌</div>
+    <div class="popup-title">Gagal Mengirim Bug!</div>
+    
+    <div class="popup-info">
+      <p id="error-message">API tidak merespon. Silakan coba lagi nanti.</p>
+    </div>
+    
+    <button class="glow-button" onclick="closeErrorPopup()" style="background: rgba(46, 26, 26, 0.7);">
+      <span>Tutup</span>
+    </button>
+  </div>
+
+  <div class="navbar" id="navbar">
+    <div class="nav-item active" onclick="showHomePage()">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-text">Home</div>
+    </div>
+    <div class="nav-item" onclick="showToolsPage()">
+      <div class="nav-icon">🐞</div>
+      <div class="nav-text">Bug</div>
+    </div>
+    <div class="nav-item" id="private-tools-nav-item" onclick="showPrivateToolsPage()">
+      <div class="nav-icon">🔒</div>
+      <div class="nav-text">Private</div>
+    </div>
+    <div class="nav-item" id="addacc-nav-item" onclick="showAddAccountPage()">
+      <div class="nav-icon">👥</div>
+      <div class="nav-text">Add Acc</div>
+    </div>
+    <div class="nav-item" onclick="showApophisPage()">
+      <div class="nav-icon">🤖</div>
+      <div class="nav-text">Apophis AI</div>
+    </div>
+  </div>
+
+  <script>
+    // Konfigurasi backend
+    // Di bagian atas file
+const BACKEND_URL = window.location.origin; // Ganti dengan URL backend Anda
+    
+    // Variabel global
+    let currentUser = null;
+    let currentRole = "guest";
+    let currentCooldown = 0;
+    let cooldownTime = 0;
+    let cooldownInterval;
+    
+    // DOM elements
+    const loginPage = document.getElementById('login-page');
+    const homePage = document.getElementById('home-page');
+    const toolsPage = document.getElementById('tools-page');
+    const addaccPage = document.getElementById('addacc-page');
+    const apophisPage = document.getElementById('apophis-page');
+    const privateToolsPage = document.getElementById('private-tools-page');
+    const successPopup = document.getElementById('success-popup');
+    const comingSoonPopup = document.getElementById('coming-soon-popup');
+    const errorPopup = document.getElementById('error-popup');
+    const cooldownDisplay = document.getElementById('cooldown-display');
+    const toolsCooldown = document.getElementById('tools-cooldown');
+    const addaccCooldown = document.getElementById('addacc-cooldown');
+    const apophisCooldown = document.getElementById('apophis-cooldown');
+    const privateToolsCooldown = document.getElementById('private-tools-cooldown');
+    const popupCooldown = document.getElementById('popup-cooldown');
+    const navbar = document.getElementById('navbar');
+    const sendBugBtn = document.getElementById('send-bug-btn');
+    const sendPrivateBugBtn = document.getElementById('send-private-bug-btn');
+    const addaccNavItem = document.getElementById('addacc-nav-item');
+    const privateToolsNavItem = document.getElementById('private-tools-nav-item');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const checkTargetBtn = document.getElementById('check-target-btn');
+    
+    // Loader elements
+    const loginLoader = document.getElementById('login-loader');
+    const bugLoader = document.getElementById('bug-loader');
+    const addaccLoader = document.getElementById('addacc-loader');
+    const privateBugLoader = document.getElementById('private-bug-loader');
+    
+    // Format date to readable string
+    function formatDate(dateString) {
+      if (!dateString) return "Tidak pernah";
+      const d = new Date(dateString);
+      return d.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    
+    // Show expired info
+    function showExpiredInfo(user) {
+      const elements = document.querySelectorAll('#expired-info, #tools-expired-info, #addacc-expired-info, #apophis-expired-info, #private-tools-expired-info');
+      elements.forEach(el => {
+        if (user.expiredDate) {
+          const expired = new Date(user.expiredDate) < new Date();
+          el.textContent = expired ? 
+            `Akun EXPIRED! (${formatDate(user.expiredDate)})` : 
+            `Berlaku hingga: ${formatDate(user.expiredDate)}`;
+          el.style.display = 'block';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    }
+    
+    // Login function
+    async function login() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  
+  if (!username || !password) {
+    alert('Silakan isi username dan password dengan benar!');
+    return;
+  }
+  
+  if (username.length < 4 || password.length < 4) {
+    alert('Username dan password harus minimal 4 karakter!');
+    return;
+  }
+  
+  // Show loader
+  loginLoader.style.display = 'block';
+  document.querySelector('.glow-button').disabled = true;
+  
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      currentUser = data.user;
+      currentRole = currentUser.role || 'member';
+      
+      document.querySelectorAll('.user-name').forEach(el => el.textContent = currentUser.name);
+      document.querySelectorAll('.user-role').forEach(el => {
+        const badge = el.querySelector('.role-badge');
+        badge.textContent = currentRole.charAt(0).toUpperCase() + currentRole.slice(1);
+        badge.className = 'role-badge ' + currentRole;
+      });
+      
+      showExpiredInfo(currentUser);
+      loginPage.style.display = 'none';
+      homePage.classList.add('active');
+      navbar.style.display = 'flex';
+      
+      if (currentRole === 'member') {
+        addaccNavItem.style.display = 'none';
+        privateToolsNavItem.style.display = 'none';
+      } else if (currentRole === 'reseller' || currentRole === 'reseller_vip') {
+        addaccNavItem.style.display = 'flex';
+        privateToolsNavItem.style.display = 'none';
+      } else if (currentRole === 'ownerlite' || currentRole === 'owner') {
+        addaccNavItem.style.display = 'flex';
+        privateToolsNavItem.style.display = 'flex';
+      }
+      
+      // Load accounts list if on addacc page
+      if (addaccPage.classList.contains('active')) {
+        loadAccountsList();
+      }
+      
+      startCooldown();
+    } else {
+      alert(data.message || 'Login gagal! Username atau password salah.');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Terjadi kesalahan saat login. Silakan coba lagi.');
+  } finally {
+    loginLoader.style.display = 'none';
+    document.querySelector('.glow-button').disabled = false;
+  }
+}
+    // Demo login function
+    function loginAsDemoUser(username) {
+      currentUser = {
+        username: username,
+        name: username,
+        role: 'owner',
+        expiredDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        cooldown: {
+          member: 60,
+          reseller: 30,
+          reseller_vip: 0,
+          ownerlite: 0,
+          owner: 0
+        }
+      };
+      
+      currentRole = 'owner';
+      
+      document.querySelectorAll('.user-name').forEach(el => el.textContent = currentUser.name);
+      document.querySelectorAll('.user-role').forEach(el => {
+        const badge = el.querySelector('.role-badge');
+        badge.textContent = 'Owner';
+        badge.className = 'role-badge owner';
+      });
+      
+      showExpiredInfo(currentUser);
+      loginPage.style.display = 'none';
+      homePage.classList.add('active');
+      navbar.style.display = 'flex';
+      
+      if (currentRole === 'member') {
+        addaccNavItem.style.display = 'none';
+        privateToolsNavItem.style.display = 'none';
+      } else if (currentRole === 'reseller' || currentRole === 'reseller_vip') {
+        addaccNavItem.style.display = 'flex';
+        privateToolsNavItem.style.display = 'none';
+      } else if (currentRole === 'ownerlite' || currentRole === 'owner') {
+        addaccNavItem.style.display = 'flex';
+        privateToolsNavItem.style.display = 'flex';
+      }
+      
+      startCooldown();
+      
+      alert('Anda masuk dalam mode demo karena server tidak tersedia.');
+    }
+    
+    // Logout function
+    function logout() {
+      // Clear any active cooldown
+      clearInterval(cooldownInterval);
+      
+      // Hide all pages, show login page
+      homePage.classList.remove('active');
+      toolsPage.classList.remove('active');
+      addaccPage.classList.remove('active');
+      apophisPage.classList.remove('active');
+      privateToolsPage.classList.remove('active');
+      loginPage.style.display = 'flex';
+      
+      // Hide navbar
+      navbar.style.display = 'none';
+      
+      // Reset form
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      
+      currentUser = null;
+      currentRole = "guest";
+    }
+    
+    // Navigation functions
+    function showHomePage() {
+      homePage.classList.add('active');
+      toolsPage.classList.remove('active');
+      addaccPage.classList.remove('active');
+      apophisPage.classList.remove('active');
+      privateToolsPage.classList.remove('active');
+      updateNavbar('home');
+    }
+    
+    function showToolsPage() {
+      homePage.classList.remove('active');
+      toolsPage.classList.add('active');
+      addaccPage.classList.remove('active');
+      apophisPage.classList.remove('active');
+      privateToolsPage.classList.remove('active');
+      updateNavbar('tools');
+    }
+    
+    function showAddAccountPage() {
+      // Check if user has access
+      if (currentRole === 'member') {
+        showHomePage();
+        alert('Akses ditolak! Hanya reseller dan di atasnya yang dapat membuat akun.');
+        return;
+      }
+      
+      homePage.classList.remove('active');
+      toolsPage.classList.remove('active');
+      addaccPage.classList.add('active');
+      apophisPage.classList.remove('active');
+      privateToolsPage.classList.remove('active');
+      updateNavbar('addacc');
+      
+      // Load accounts list when page is shown
+      loadAccountsList();
+    }
+    
+    function showApophisPage() {
+      // Show "Coming Soon" popup
+      comingSoonPopup.style.display = 'block';
+      updateNavbar('apophis');
+    }
+
+    function closeComingSoonPopup() {
+      comingSoonPopup.style.display = 'none';
+      if (!homePage.classList.contains('active') && !toolsPage.classList.contains('active') && !addaccPage.classList.contains('active') && !privateToolsPage.classList.contains('active')) {
+          showHomePage();
+      }
+    }
+
+    function showPrivateToolsPage() {
+      if (currentRole !== 'ownerlite' && currentRole !== 'owner') { 
+        showHomePage();
+        alert('Akses ditolak! Hanya owner dan ownerlite yang dapat mengakses halaman ini.');
+        return;
+      }
+      
+      homePage.classList.remove('active');
+      toolsPage.classList.remove('active');
+      addaccPage.classList.remove('active');
+      apophisPage.classList.remove('active');
+      privateToolsPage.classList.add('active');
+      updateNavbar('private');
+    }
+    
+    // Update navbar active item
+    function updateNavbar(activeItem) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      if (activeItem === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+      else if (activeItem === 'tools') document.querySelectorAll('.nav-item')[1].classList.add('active');
+      else if (activeItem === 'private') document.querySelectorAll('.nav-item')[2].classList.add('active');
+      else if (activeItem === 'addacc') document.querySelectorAll('.nav-item')[3].classList.add('active');
+      else if (activeItem === 'apophis') document.querySelectorAll('.nav-item')[4].classList.add('active');
+    }
+    
+    // Send bug function
+    async function sendBug() {
+      if (currentCooldown > 0) {
+        alert(`Anda masih dalam cooldown! Tunggu ${currentCooldown} detik lagi.`);
+        return;
+      }
+      
+      const targetNumber = document.getElementById('target-number').value;
+      const bugType = document.getElementById('bug-type').value;
+      
+      if (!targetNumber) {
+        alert('Masukkan nomor target terlebih dahulu!');
+        return;
+      }
+      
+      // Format nomor target
+      const formattedTarget = formatPhoneNumber(targetNumber);
+      
+      // Show loader
+      bugLoader.style.display = 'block';
+      sendBugBtn.disabled = true;
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/send-bug`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            target: formattedTarget,
+            bugType: bugType,
+            isPrivate: false,
+            currentUser: currentUser
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('popup-target').textContent = formattedTarget;
+          document.getElementById('popup-bug-type').textContent = bugType;
+          successPopup.style.display = 'block';
+          checkTargetBtn.href = `https://wa.me/${formattedTarget}?text=P`;
+          
+          // Set cooldown based on role
+          if (currentUser.cooldown && currentUser.cooldown[currentRole]) {
+            cooldownTime = currentUser.cooldown[currentRole];
+          } else {
+            // Default cooldown values if not defined
+            const defaultCooldown = {
+              member: 60,
+              reseller: 30,
+              reseller_vip: 0,
+              ownerlite: 0,
+              owner: 0
+            };
+            cooldownTime = defaultCooldown[currentRole] || 0;
+          }
+          
+          currentCooldown = cooldownTime;
+          resetCooldown();
+          
+          if (cooldownTime > 0) {
+            sendBugBtn.classList.add('disabled');
+          }
+        } else {
+          showErrorPopup(data.message || "Gagal mengirim bug. Silakan coba lagi.");
+          if (data.api_response) {
+            console.error("API Response:", data.api_response);
+          }
+        }
+      } catch (error) {
+        console.error('Send bug error:', error);
+        showErrorPopup("Terjadi kesalahan saat mengirim bug");
+      } finally {
+        bugLoader.style.display = 'none';
+        sendBugBtn.disabled = false;
+      }
+    }
+    
+    // Send private bug
+    async function sendPrivateBug() {
+      if (currentCooldown > 0) {
+        alert(`Anda masih dalam cooldown! Tunggu ${currentCooldown} detik lagi.`);
+        return;
+      }
+      
+      const targetNumber = document.getElementById('private-target-number').value;
+      const bugType = document.getElementById('private-bug-type').value;
+      
+      if (!targetNumber) {
+        alert('Masukkan nomor target terlebih dahulu!');
+        return;
+      }
+      
+      // Format nomor target
+      const formattedTarget = formatPhoneNumber(targetNumber);
+      
+      // Show loader
+      privateBugLoader.style.display = 'block';
+      sendPrivateBugBtn.disabled = true;
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/send-bug`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            target: formattedTarget,
+            bugType: bugType,
+            isPrivate: true,
+            currentUser: currentUser
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('popup-target').textContent = formattedTarget;
+          document.getElementById('popup-bug-type').textContent = bugType;
+          successPopup.style.display = 'block';
+          checkTargetBtn.href = `https://wa.me/${formattedTarget}?text=P`;
+          
+          // Set cooldown based on role
+          if (currentUser.cooldown && currentUser.cooldown[currentRole]) {
+            cooldownTime = currentUser.cooldown[currentRole];
+          } else {
+            // Default cooldown values if not defined
+            const defaultCooldown = {
+              member: 60,
+              reseller: 30,
+              reseller_vip: 0,
+              ownerlite: 0,
+              owner: 0
+            };
+            cooldownTime = defaultCooldown[currentRole] || 0;
+          }
+          
+          currentCooldown = cooldownTime;
+          resetCooldown();
+          
+          if (cooldownTime > 0) {
+            sendPrivateBugBtn.classList.add('disabled');
+          }
+        } else {
+          showErrorPopup(data.message || "Gagal mengirim private bug. Silakan coba lagi.");
+          if (data.api_response) {
+            console.error("API Response:", data.api_response);
+          }
+        }
+      } catch (error) {
+        console.error('Send private bug error:', error);
+        showErrorPopup("Terjadi kesalahan saat mengirim private bug");
+      } finally {
+        privateBugLoader.style.display = 'none';
+        sendPrivateBugBtn.disabled = false;
+      }
+    }
+
+    // Show error popup
+    function showErrorPopup(message) {
+      document.getElementById('error-message').textContent = message;
+      errorPopup.style.display = 'block';
+    }
+
+    // Close error popup
+    function closeErrorPopup() {
+      errorPopup.style.display = 'none';
+    }
+    
+    // Close popup
+    function closePopup() {
+      successPopup.style.display = 'none';
+    }
+    
+    // Load accounts list for Add Account page
+    async function loadAccountsList() {
+      if (!currentUser || currentRole === 'member') return;
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/accounts`);
+        const data = await response.json();
+        
+        if (data.success) {
+          const accountsListBody = document.getElementById('accounts-list-body');
+          accountsListBody.innerHTML = '';
+          
+          data.users.forEach(user => {
+            if (user.username === currentUser.username) return;
+            
+            const row = document.createElement('tr');
+            
+            const usernameCell = document.createElement('td');
+            usernameCell.textContent = user.username;
+            
+            const roleCell = document.createElement('td');
+            const roleBadge = document.createElement('span');
+            roleBadge.className = 'role-badge ' + user.role;
+            roleBadge.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            roleCell.appendChild(roleBadge);
+            
+            const expiredCell = document.createElement('td');
+            expiredCell.textContent = formatDate(user.expiredDate);
+            
+            const actionCell = document.createElement('td');
+            actionCell.style.textAlign = 'center';
+            
+            if (currentRole === 'owner' || currentRole === 'ownerlite') {
+              const deleteBtn = document.createElement('button');
+              deleteBtn.textContent = 'Hapus';
+              deleteBtn.className = 'delete-btn';
+              deleteBtn.onclick = () => deleteAccount(user.username);
+              actionCell.appendChild(deleteBtn);
+            } else {
+              actionCell.textContent = '-';
+            }
+            
+            row.appendChild(usernameCell);
+            row.appendChild(roleCell);
+            row.appendChild(expiredCell);
+            row.appendChild(actionCell);
+            
+            accountsListBody.appendChild(row);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading accounts:', error);
+      }
+    }
+    
+    // Delete account function
+    async function deleteAccount(username) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus akun ${username}?`)) return;
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/account/${username}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ currentUser })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`Akun ${username} berhasil dihapus!`);
+          loadAccountsList();
+        } else {
+          alert(data.message || 'Gagal menghapus akun');
+        }
+      } catch (error) {
+        console.error('Delete account error:', error);
+        alert('Terjadi kesalahan saat menghapus akun');
+      }
+    }
+    
+    // Add account function
+    async function addAccount() {
+      const username = document.getElementById('new-username').value;
+      const password = document.getElementById('new-password').value;
+      const role = document.getElementById('account-role').value;
+      const duration = parseInt(document.getElementById('account-duration').value) || 30;
+      
+      if (!username || !password) {
+        alert("Harap isi username dan password!");
+        return;
+      }
+
+      // Calculate expiration date
+      const now = new Date();
+      const expiredDate = new Date(now.setDate(now.getDate() + duration)).toISOString();
+      
+      // Show loader
+      addaccLoader.style.display = 'block';
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/add-account`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            newUser: {
+              username,
+              password,
+              role,
+              expiredDate
+            },
+            currentUser
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`Akun ${username} (${role}) berhasil dibuat! Berlaku hingga ${formatDate(expiredDate)}`);
+          
+          // Reset form
+          document.getElementById('new-username').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('account-role').value = 'reseller_vip';
+          document.getElementById('account-duration').value = '30';
+          
+          // Reload accounts list
+          loadAccountsList();
+        } else {
+          alert(data.message || 'Gagal membuat akun');
+        }
+      } catch (error) {
+        console.error('Add account error:', error);
+        alert('Terjadi kesalahan saat membuat akun');
+      } finally {
+        addaccLoader.style.display = 'none';
+      }
+    }
+    
+    // Format phone number to 62xxxxxxxxxx
+    function formatPhoneNumber(number) {
+      let cleaned = number.replace(/\D/g, '');
+      
+      if (cleaned.startsWith('0')) {
+        cleaned = cleaned.substring(1);
+      }
+      
+      if (!cleaned.startsWith('62')) {
+        cleaned = '62' + cleaned;
+      }
+      
+      return cleaned;
+    }
+    
+    // Start cooldown timer
+    function startCooldown() {
+      let remaining = currentCooldown;
+      
+      cooldownInterval = setInterval(() => {
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        
+        const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        cooldownDisplay.textContent = display;
+        toolsCooldown.textContent = display;
+        addaccCooldown.textContent = display;
+        apophisCooldown.textContent = display;
+        privateToolsCooldown.textContent = display;
+        popupCooldown.textContent = display;
+        
+        currentCooldown = remaining;
+        
+        if (remaining <= 0) {
+          clearInterval(cooldownInterval);
+          cooldownDisplay.textContent = '00:00';
+          toolsCooldown.textContent = '00:00';
+          addaccCooldown.textContent = '00:00';
+          apophisCooldown.textContent = '00:00';
+          privateToolsCooldown.textContent = '00:00';
+          popupCooldown.textContent = '00:00';
+          
+          sendBugBtn.classList.remove('disabled');
+          sendPrivateBugBtn.classList.remove('disabled');
+        }
+        
+        remaining--;
+      }, 1000);
+    }
+    
+    // Reset cooldown
+    function resetCooldown() {
+      clearInterval(cooldownInterval);
+      startCooldown();
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      navbar.style.display = 'none';
+      currentCooldown = 0;
+      
+      document.querySelectorAll('.user-role').forEach(el => {
+        const badge = el.querySelector('.role-badge');
+        badge.textContent = currentRole.charAt(0).toUpperCase() + currentRole.slice(1);
+        badge.className = 'role-badge ' + currentRole;
+      });
+      
+      userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          // sendAI();
+        }
+      });
+
+      privateToolsNavItem.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
