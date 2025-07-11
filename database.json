@@ -1,18 +1,22 @@
 {
   "users": [
     {
-      "username": "admin",
-      "password": "admin123",
-      "name": "Admin",
-      "role": "owner",
-      "expiredDate": "2099-12-31T00:00:00.000Z",
-      "cooldown": {
-        "member": 60,
-        "reseller": 30,
-        "reseller_vip": 0,
-        "ownerlite": 0,
-        "owner": 0
-      }
+      "username": "member1",
+      "password": "password123",
+      "role": "member",
+      "expiredDate": "2024-12-31T00:00:00.000Z"
+    },
+    {
+      "username": "reseller1",
+      "password": "password123",
+      "role": "reseller",
+      "expiredDate": "2024-12-31T00:00:00.000Z"
+    },
+    {
+      "username": "vip1",
+      "password": "password123",
+      "role": "reseller_vip",
+      "expiredDate": "2024-12-31T00:00:00.000Z"
     }
   ]
 }
