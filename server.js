@@ -73,6 +73,19 @@ app.post('/api/send-bug', async (req, res) => {
       success: true,
       api_response: response.data
     });
+    const COOLDOWN_BY_ROLE = {
+    member: 60,
+    reseller: 30,
+    reseller_vip: 15,
+    ownerlite: 5,
+    owner: 0
+  };
+
+  res.json({
+    success: true,
+    cooldown: COOLDOWN_BY_ROLE[currentUser.role] || 60,
+    api_response: response.data
+  });
   } catch (error) {
     res.status(500).json({ 
       success: false, 
